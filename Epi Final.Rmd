@@ -9,4 +9,61 @@ output: word_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+#Packages and data import
+```{r}
+library(tidyverse)
+library(stringr)
+library(dplyr)
+library(lme4)
+library(broom)
+library(scales)
+library(readxl)
+library(broom.mixed)
+library(ggplot2)
+
+mask <- read_csv("nytimes_covid_masks.csv")   
+colleges <- read_csv("nytimes_covid_college_cases.csv")
+recent <- read_csv("us-counties-recent.csv")  
+election <- read_csv("countypres_2000-2020.csv")
+calicoll <- read_excel("colleges.xlsx")
+```
+
+
+#Initial clean
+```{r}
+set.seed(416)
+
+#county_state (for joining), matching fips, cleaning imported data
+mask <- mask %>%
+  mutate(fips = str_pad(COUNTYFP, 5, side = c("left"), pad = "0")) %>%
+  select(fips, NEVER, ALWAYS) %>%
+  rename_all(str_to_lower)
+
+colleges <- colleges %>%
+  mutate(county_state = paste(county, state, sep = ", ")) %>%
+  select(state, county, city, ipeds_id, college, cases, cases_2021, county_state)
+
+recent <- recent %>%
+  mutate(county_state = paste(county, state, sep = ", "))
+
+election <- election %>%
+  mutate(fips = str_pad(county_fips, 5, side = c("left"), pad = "0")) %>%
+  select(fips, candidate, party, candidatevotes, totalvotes, fips)
+
+calicoll <- calicoll %>%
+  mutate(fips = str_pad(fips, 5, side = c("left"), pad = "0")) %>%
+  mutate(fips = as.character(fips))
+```
+
+#Joins
+```{r}
+recentcoll <- full_join(recent, colleges, by = "county_state") #recent, colleges
+collrecoll <- full_join(recentcoll, election, by = "fips") #recent, colleges, election
+addcali <- full_join(collrecoll, calicoll, by = "fips") #recent, colleges, election, Cali - uses excel
+addmask <- full_join(addcali, mask, by = "fips")
+```
+
+
+
+
 
