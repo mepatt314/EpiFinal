@@ -177,3 +177,14 @@ cplot2 <- cormod2 %>%
 cplot2
 ```
 
+#Plot
+```{r}
+plt <- ncdf %>%
+  select(ipeds_id, `student vax`, dth_cty_ratio) %>%
+  ggplot(aes(x = `student vax`, y = dth_cty_ratio, color = ipeds_id)) +
+  geom_boxplot()
+plt
+```
+
+
+
