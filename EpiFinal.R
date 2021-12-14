@@ -190,16 +190,13 @@ mod3 %>%
 
 ###################################################Pairs plot
 library(GGally)
-exposure <- ncdf %>%
+exposurepairs <- ncdf %>%
   select(`student vax`, dth_cty_ratio) %>%
   ggpairs()
 
-counts <- ncdf %>%
-  select(cas_coll, cas_coll_21, cas_cty, dth_cty) %>%
-  ggpairs()
-
-ratios <- ncdf %>%
-  select(`student vax`, never, partyratio, cs_cty_ratio, dth_cty_ratio, cs_collratio, cs_coll_21_ratio) %>%
+bigpairs <- ncdf %>%
+  select(`student vax`, never, partyratio, cs_cty_ratio, dth_cty_ratio, cs_collratio) %>%
+  rename(party = partyratio, county_cases = cs_cty_ratio, deaths = dth_cty_ratio, college_cases = cs_collratio ) %>%
   ggpairs()
 
 ###################################################Corr Plot

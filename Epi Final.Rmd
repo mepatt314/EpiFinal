@@ -121,7 +121,7 @@ mod2 <- ncdf %>%
   lmer(dth_cty_ratio ~ 1 + `student vax` + (1 | ipeds_id), data = .)
 summary(mod2)
 
-mod3 <- cdf %>%
+mod3 <- ncdf %>%
   lmer(dth_cty_ratio ~ 1 + `student vax`  + never + (1 | ipeds_id), data = .)
 summary(mod3)
 
@@ -129,5 +129,52 @@ mod3 %>%
   tidy()
 ```
 
+#Facet plot
+```{r}
+library(broom.mixed)
+mod3 %>%
+  augment(data = ncdf) %>%
+  ggplot(aes(x = `student vax`, color = party)) +
+  geom_line(aes(y = dth_cty_ratio), linetype = 1) +
+  geom_line(aes(y = .fitted), linetype = 2) +
+  geom_line(aes(y = .fixed), linetype = 3) +
+  labs(x = "Percent Students Vaccinated", y = "County Death Rate", title = "County Death Rate and Political Party") +
+  facet_wrap(~ college, ncol = 4)
+```
 
+#Pairs plots
+```{r}
+library(GGally)
+exposurepairs <- ncdf %>%
+  select(`student vax`, dth_cty_ratio) %>%
+  ggpairs()
+exposurepairs
+
+bigpairs <- ncdf %>%
+  select(`student vax`, never, partyratio, cs_cty_ratio, dth_cty_ratio, cs_collratio) %>%
+  rename(party = partyratio, county_cases = cs_cty_ratio, deaths = dth_cty_ratio, college_cases = cs_collratio ) %>%
+  ggpairs()
+bigpairs
+```
+
+#Corr plot
+```{r}
+library(ggcorrplot)
+cormod2 <- ncdf %>%
+  select(ipeds_id, dth_cty_ratio, cs_collratio, cs_coll_21_ratio, cs_cty_ratio, `student vax`, never, partyratio) %>%
+  mutate(dth_cty_ratio = as.numeric(dth_cty_ratio)) %>%
+  mutate(ipeds_id = as.numeric(ipeds_id)) %>%
+  rename(`county deaths` = dth_cty_ratio) %>%
+  rename(`college cases` = cs_collratio) %>%
+  rename(`college cases 2021` = cs_coll_21_ratio) %>%
+  rename(`county cases` = cs_cty_ratio) %>%
+  rename(`student vaccination rate` = `student vax`) %>%
+  rename(`never use mask` = never) %>%
+  rename(`political party` = partyratio)
+
+cplot2 <- cormod2 %>%
+  cor(x = cormod2) %>%
+  ggcorrplot(method = "circle", type = "lower", title = "Student Vaccination and COVID-19 Cases and Deaths")
+cplot2
+```
 
