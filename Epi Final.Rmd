@@ -180,8 +180,8 @@ cplot2
 #Plot
 ```{r}
 plt <- ncdf %>%
-  select(ipeds_id, `student vax`, dth_cty_ratio) %>%
-  ggplot(aes(x = `student vax`, y = dth_cty_ratio, color = ipeds_id)) +
+  select(college, `student vax`, dth_cty_ratio) %>%
+  ggplot(aes(x = `student vax`, y = dth_cty_ratio, color = college)) +
   geom_boxplot()
 plt
 ```
