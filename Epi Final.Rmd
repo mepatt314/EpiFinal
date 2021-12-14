@@ -108,12 +108,25 @@ ncdf <- cdf %>%
   unnest()
 
 ncdf
-
 ```
 
-#Models
+#Models, used mod for analysis
 ```{r}
+#Mixed effects
+mod <- ncdf %>%
+  lmer(dth_cty_ratio ~ 1 + cs_collratio + `student vax` + party + never + cs_cty_ratio + cs_coll_21_ratio + (1 | ipeds_id), data = .)
+summary(mod)
 
+mod2 <- ncdf %>%
+  lmer(dth_cty_ratio ~ 1 + `student vax` + (1 | ipeds_id), data = .)
+summary(mod2)
+
+mod3 <- cdf %>%
+  lmer(dth_cty_ratio ~ 1 + `student vax`  + never + (1 | ipeds_id), data = .)
+summary(mod3)
+
+mod3 %>%
+  tidy()
 ```
 
 
