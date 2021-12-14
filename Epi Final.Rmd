@@ -63,7 +63,57 @@ addcali <- full_join(collrecoll, calicoll, by = "fips") #recent, colleges, elect
 addmask <- full_join(addcali, mask, by = "fips")
 ```
 
+#Clean new dataset
+```{r}
+cdf <- addmask %>%
+  na.omit(college.x) %>%
+  na.omit(`total enrollment`) %>%
+  select(date, college.x, city.x, state.x, county.x, `county pop`, fips, cases.x, deaths, ipeds_id.x, `total enrollment`, `student vax`,
+         cases.y, cases_2021, candidate, party, candidatevotes, totalvotes, always, never) %>%
+  rename(college = college.x) %>%
+  rename(ipeds_id = ipeds_id.x) %>%
+  rename(city = city.x) %>%
+  rename(county = county.x) %>%
+  rename(state = state.x) %>%
+  rename(cas_cty = cases.x) %>%
+  rename(dth_cty = deaths) %>%
+  rename(cas_coll = cases.y) %>%
+  rename(cas_coll_21 = cases_2021) %>%
+  mutate(partyratio = candidatevotes/totalvotes) %>%
+  mutate(cs_cty_ratio = (cas_cty/`county pop`)) %>%
+  mutate(dth_cty_ratio = (dth_cty/`county pop`)) %>%
+  mutate(cs_collratio = (cas_coll/`total enrollment`)) %>%
+  mutate(cs_coll_21_ratio = (cas_coll_21/`total enrollment`)) %>%
+  group_by(college) 
+```
 
+#Finding cA colleges
+```{r}
+california <- cdf %>%  #75
+  filter(state == "California") %>%
+  nest()
+```
+
+#Filtering out large duplicates, filter to 13 with no vax info
+```{r}
+ncdf <- cdf %>%
+  filter(ipeds_id == c("110617", "110583", "110608", "121150", "120254", "122597", "122755", 
+                       "110635", "110644", "110662", "123961", "120883", "122612")) %>%
+  group_by(ipeds_id) %>%
+  mutate(n = n()) %>%
+  select(date, college, ipeds_id, cas_cty, dth_cty, `county pop`, cas_coll, cas_coll_21, 
+         `total enrollment`, `student vax`, party, candidate, candidatevotes, totalvotes, always, never, partyratio, cs_cty_ratio, 
+         dth_cty_ratio, cs_collratio, cs_coll_21_ratio, n) %>%
+  nest() %>%
+  unnest()
+
+ncdf
+```
+
+#Models
+```{r}
+
+```
 
 
 

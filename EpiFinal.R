@@ -137,7 +137,7 @@ mod2 <- mod_ncdf %>%
   lmer(dth_cty_ratio ~ 1 + `student vax` + (1 | ipeds_id), data = .)
 
 mod3 <- cdf %>%
-  lmer(dth_cty_ratio ~ 1 + `student vax` + party + never + (1 | ipeds_id), data = .)
+  lmer(dth_cty_ratio ~ 1 + `student vax`  + never + (1 | ipeds_id), data = .)
 
 summary(mod3)
 summary(mod)
