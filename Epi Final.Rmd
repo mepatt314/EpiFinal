@@ -6,7 +6,7 @@ output: word_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, eval = TRUE, message = FALSE, warning = FALSE)
 ```
 
 #Packages and data import
@@ -87,7 +87,7 @@ cdf <- addmask %>%
   group_by(college) 
 ```
 
-#Finding cA colleges
+#Finding CA colleges
 ```{r}
 california <- cdf %>%  #75
   filter(state == "California") %>%
