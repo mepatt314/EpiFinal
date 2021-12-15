@@ -123,10 +123,12 @@ summary(mod2)
 
 mod3 <- ncdf %>%
   lmer(dth_cty_ratio ~ 1 + `student vax`  + never + (1 | ipeds_id), data = .)
-summary(mod3)
 
+
+summary(mod3)
 mod3 %>%
   tidy()
+broom::augment(mod3)
 ```
 
 #Facet plot
@@ -138,7 +140,7 @@ mod3 %>%
   geom_line(aes(y = dth_cty_ratio), linetype = 1) +
   geom_line(aes(y = .fitted), linetype = 2) +
   geom_line(aes(y = .fixed), linetype = 3) +
-  labs(x = "Percent Students Vaccinated", y = "County Death Rate", title = "County Death Rate and Political Party") +
+  labs(x = "Percent Students Vaccinated", y = "County Death Rate", title = "County Death Rate and Student Vaccinations") +
   facet_wrap(~ college, ncol = 4)
 ```
 
@@ -180,10 +182,17 @@ cplot2
 #Plot
 ```{r}
 plt <- ncdf %>%
-  select(college, `student vax`, dth_cty_ratio) %>%
-  ggplot(aes(x = `student vax`, y = dth_cty_ratio, color = college)) +
+  select(college, `student vax`, dth_cty_ratio, never) %>%
+  ggplot(aes(x = never, y = dth_cty_ratio, color = college)) +
   geom_boxplot()
 plt
+
+plt2 <- ncdf %>%
+  select(college, `student vax`, dth_cty_ratio, never) %>%
+  ggplot(aes(x =  never, y = dth_cty_ratio, color = `never) +
+  geom_boxplot() +
+  facet_wrap(~ college)
+plt2  
 ```
 
 

@@ -136,7 +136,7 @@ mod <- mod_ncdf %>%
 mod2 <- mod_ncdf %>%
   lmer(dth_cty_ratio ~ 1 + `student vax` + (1 | ipeds_id), data = .)
 
-mod3 <- cdf %>%
+mod3 <- ncdf %>%
   lmer(dth_cty_ratio ~ 1 + `student vax`  + never + (1 | ipeds_id), data = .)
 
 summary(mod3)
@@ -145,6 +145,10 @@ summary(mod2)
 
 mod3 %>%
   tidy()
+broom::augment(mod3)
+glance(mod3)
+library(pvaluefunctions)
+res_frame(mod3)
 
 #GLM
 library(glmer)
