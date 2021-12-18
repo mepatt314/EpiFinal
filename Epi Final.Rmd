@@ -69,7 +69,7 @@ cdf <- addmask %>%
   na.omit(college.x) %>%
   na.omit(`total enrollment`) %>%
   select(date, college.x, city.x, state.x, county.x, `county pop`, fips, cases.x, deaths, ipeds_id.x, `total enrollment`, `student vax`,
-         cases.y, cases_2021, candidate, party, candidatevotes, totalvotes, always, never) %>%
+         cases.y, cases_2021, never) %>%
   rename(college = college.x) %>%
   rename(ipeds_id = ipeds_id.x) %>%
   rename(city = city.x) %>%
@@ -79,12 +79,12 @@ cdf <- addmask %>%
   rename(dth_cty = deaths) %>%
   rename(cas_coll = cases.y) %>%
   rename(cas_coll_21 = cases_2021) %>%
-  mutate(partyratio = candidatevotes/totalvotes) %>%
   mutate(cs_cty_ratio = (cas_cty/`county pop`)) %>%
   mutate(dth_cty_ratio = (dth_cty/`county pop`)) %>%
   mutate(cs_collratio = (cas_coll/`total enrollment`)) %>%
   mutate(cs_coll_21_ratio = (cas_coll_21/`total enrollment`)) %>%
   group_by(college) 
+cdf
 ```
 
 #Finding CA colleges
@@ -101,8 +101,8 @@ ncdf <- cdf %>%
                        "110635", "110644", "110662", "123961", "120883", "122612")) %>%
   group_by(ipeds_id) %>%
   mutate(n = n()) %>%
-  select(date, college, ipeds_id, cas_cty, dth_cty, `county pop`, cas_coll, cas_coll_21, 
-         `total enrollment`, `student vax`, party, candidate, candidatevotes, totalvotes, always, never, partyratio, cs_cty_ratio, 
+  select(college, ipeds_id, cas_cty, dth_cty, cas_coll, cas_coll_21, 
+         `student vax`, never, cs_cty_ratio, 
          dth_cty_ratio, cs_collratio, cs_coll_21_ratio, n) %>%
   nest() %>%
   unnest()
@@ -125,10 +125,13 @@ mod3 <- ncdf %>%
   lmer(dth_cty_ratio ~ 1 + `student vax`  + never + (1 | ipeds_id), data = .)
 
 
+library(lmerTest)
 summary(mod3)
 mod3 %>%
   tidy()
 broom::augment(mod3)
+anova(mod3)
+
 ```
 
 #Facet plot
@@ -189,9 +192,8 @@ plt
 
 plt2 <- ncdf %>%
   select(college, `student vax`, dth_cty_ratio, never) %>%
-  ggplot(aes(x =  never, y = dth_cty_ratio, color = `never) +
-  geom_boxplot() +
-  facet_wrap(~ college)
+  ggplot(aes(x =  `student vax`, y = dth_cty_ratio, color = college)) +
+  geom_boxplot()
 plt2  
 ```
 
