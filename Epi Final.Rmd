@@ -101,8 +101,8 @@ ncdf <- cdf %>%
                        "110635", "110644", "110662", "123961", "120883", "122612")) %>%
   group_by(ipeds_id) %>%
   mutate(n = n()) %>%
-  select(college, ipeds_id, cas_cty, dth_cty, cas_coll, cas_coll_21, 
-         `student vax`, never, cs_cty_ratio, 
+  select(college, ipeds_id, cas_cty, dth_cty, `county pop`, cas_coll, cas_coll_21, 
+         `total enrollment`, `student vax`, never, cs_cty_ratio, 
          dth_cty_ratio, cs_collratio, cs_coll_21_ratio, n) %>%
   nest() %>%
   unnest()
@@ -124,14 +124,12 @@ summary(mod2)
 mod3 <- ncdf %>%
   lmer(dth_cty_ratio ~ 1 + `student vax`  + never + (1 | ipeds_id), data = .)
 
-
 library(lmerTest)
 summary(mod3)
 mod3 %>%
   tidy()
 broom::augment(mod3)
 anova(mod3)
-
 ```
 
 #Facet plot
